@@ -194,7 +194,13 @@ module.exports = function(tilelive, options) {
       setTimeout(function() {
         // the source will always be the first value since it's the first
         // argument to unlock()
-        values[0].close(function() {});
+
+        // hack to prevent mb tiles sources from being closed
+        // since it results in SQLITE_MISUSE: Database is closed
+        if (values[0].hasOwnProperty('_db') === false) {
+          values[0].close(function() {});
+        }
+
       }, (options.closeDelay || 30) * 1000);
     }
   });
